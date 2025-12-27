@@ -713,6 +713,11 @@ async def generate_new_signal(symbol: str = "US30", _: dict = Depends(verify_own
         raise HTTPException(status_code=400, detail="Invalid symbol")
     
     market_data = await market_service.get_market_data(symbol)
+    
+    # Check if market is open
+    if not market_data.is_market_open:
+        return {"message": "Cannot generate signal", "reason": f"Market closed ({market_data.market_status})"}
+    
     signal = signal_engine.generate_signal(symbol, market_data)
     
     if not signal:
