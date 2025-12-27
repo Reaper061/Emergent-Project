@@ -148,17 +148,33 @@ def is_market_open(symbol: str) -> tuple[bool, str]:
 
 class MarketDataService:
     def __init__(self):
-        self.providers = [
-            self._fetch_yahoo_finance,  # Most reliable for indices
-            self._fetch_twelve_data,
-            self._fetch_fmp,  # Financial Modeling Prep
-            self._fetch_finnhub,
-            self._fetch_alpha_vantage,
-            self._fetch_polygon,
-            self._fetch_marketstack,
-            self._fetch_fcsapi,
-            self._fetch_simulated,  # Fallback simulation
+        # Provider configuration with names for logging
+        self.provider_config = [
+            {"name": "yahoo_finance", "func": "_fetch_yahoo_finance", "priority": 1},
+            {"name": "twelve_data", "func": "_fetch_twelve_data", "priority": 2},
+            {"name": "fmp", "func": "_fetch_fmp", "priority": 3},
+            {"name": "finnhub", "func": "_fetch_finnhub", "priority": 4},
+            {"name": "alpha_vantage", "func": "_fetch_alpha_vantage", "priority": 5},
+            {"name": "polygon", "func": "_fetch_polygon", "priority": 6},
+            {"name": "marketstack", "func": "_fetch_marketstack", "priority": 7},
+            {"name": "fcsapi", "func": "_fetch_fcsapi", "priority": 8},
         ]
+        
+        # Provider health tracking
+        self.provider_status = {}  # {provider_name: {"failures": 0, "last_failure": datetime, "healthy": True}}
+        self.failure_threshold = 3  # Mark unhealthy after 3 consecutive failures
+        self.recovery_interval = 300  # Try to recover failed providers every 5 minutes
+        self.last_recovery_check = datetime.now(timezone.utc)
+        
+        # Initialize all providers as healthy
+        for p in self.provider_config:
+            self.provider_status[p["name"]] = {
+                "failures": 0,
+                "last_failure": None,
+                "healthy": True,
+                "last_success": None
+            }
+        
         self.cache = {}
         self.cache_ttl = 60  # seconds
         
@@ -168,6 +184,58 @@ class MarketDataService:
             "US100": {"av": "NDX", "td": "NDX", "yf": "^NDX", "fn": "OANDA:NAS100_USD", "fmp": "^NDX"},
             "GER30": {"av": "DAX", "td": "DAX", "yf": "^GDAXI", "fn": "OANDA:DE30_EUR", "fmp": "^GDAXI"},
         }
+    
+    def _check_recovery(self):
+        """Periodically try to recover failed providers"""
+        now = datetime.now(timezone.utc)
+        if (now - self.last_recovery_check).total_seconds() >= self.recovery_interval:
+            self.last_recovery_check = now
+            for name, status in self.provider_status.items():
+                if not status["healthy"]:
+                    # Reset to healthy to give it another chance
+                    status["healthy"] = True
+                    status["failures"] = 0
+                    logger.info(f"Provider {name} marked for recovery attempt")
+    
+    def _mark_success(self, provider_name: str):
+        """Mark a provider as successful"""
+        status = self.provider_status.get(provider_name)
+        if status:
+            status["failures"] = 0
+            status["healthy"] = True
+            status["last_success"] = datetime.now(timezone.utc)
+    
+    def _mark_failure(self, provider_name: str):
+        """Mark a provider failure and track health"""
+        status = self.provider_status.get(provider_name)
+        if status:
+            status["failures"] += 1
+            status["last_failure"] = datetime.now(timezone.utc)
+            if status["failures"] >= self.failure_threshold:
+                status["healthy"] = False
+                logger.warning(f"Provider {provider_name} marked unhealthy after {status['failures']} failures")
+    
+    def _get_sorted_providers(self):
+        """Get providers sorted by health and priority"""
+        # Check if any providers need recovery
+        self._check_recovery()
+        
+        # Separate healthy and unhealthy providers
+        healthy = []
+        recovering = []
+        
+        for p in self.provider_config:
+            status = self.provider_status[p["name"]]
+            if status["healthy"]:
+                healthy.append(p)
+            else:
+                recovering.append(p)
+        
+        # Sort healthy by priority, then add recovering ones at the end
+        healthy.sort(key=lambda x: x["priority"])
+        recovering.sort(key=lambda x: x["priority"])
+        
+        return healthy + recovering
     
     async def get_market_data(self, symbol: str) -> MarketData:
         # Check market hours first
@@ -180,23 +248,45 @@ class MarketDataService:
             cached.market_status = market_status
             return cached
         
-        for provider in self.providers:
+        # Get providers in smart order (healthy first, then recovering)
+        sorted_providers = self._get_sorted_providers()
+        
+        for provider_info in sorted_providers:
+            provider_name = provider_info["name"]
+            provider_func = getattr(self, provider_info["func"])
+            
             try:
-                data = await provider(symbol)
+                data = await provider_func(symbol)
                 if data:
                     data.is_market_open = market_open
                     data.market_status = market_status
                     self.cache[cache_key] = data
+                    self._mark_success(provider_name)
+                    logger.debug(f"Data fetched from {provider_name} for {symbol}")
                     return data
             except Exception as e:
-                logger.warning(f"Provider {provider.__name__} failed: {e}")
+                self._mark_failure(provider_name)
+                logger.warning(f"Provider {provider_name} failed for {symbol}: {e}")
                 continue
         
-        # Ultimate fallback
+        # Ultimate fallback - simulated data (always works)
+        logger.warning(f"All providers failed for {symbol}, using simulated data")
         fallback = await self._fetch_simulated(symbol)
         fallback.is_market_open = market_open
         fallback.market_status = market_status
         return fallback
+    
+    def get_provider_health(self) -> Dict[str, Any]:
+        """Return current health status of all providers"""
+        return {
+            name: {
+                "healthy": status["healthy"],
+                "failures": status["failures"],
+                "last_success": status["last_success"].isoformat() if status["last_success"] else None,
+                "last_failure": status["last_failure"].isoformat() if status["last_failure"] else None
+            }
+            for name, status in self.provider_status.items()
+        }
     
     async def _fetch_alpha_vantage(self, symbol: str) -> Optional[MarketData]:
         api_key = os.environ.get('ALPHA_VANTAGE_KEY')
