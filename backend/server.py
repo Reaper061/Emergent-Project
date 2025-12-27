@@ -87,6 +87,8 @@ class MarketData(BaseModel):
     open: float
     volume: int
     timestamp: datetime
+    is_market_open: bool = True
+    market_status: str = "OPEN"  # OPEN, CLOSED, PRE_MARKET, AFTER_HOURS
 
 class DirectionState(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -94,6 +96,53 @@ class DirectionState(BaseModel):
     current_direction: str = "NEUTRAL"  # BUY, SELL, NEUTRAL
     locked_at: Optional[datetime] = None
     reason: str = ""
+
+# ===================== MARKET HOURS HELPER =====================
+
+def is_market_open(symbol: str) -> tuple[bool, str]:
+    """Check if market is open based on symbol and current time"""
+    now = datetime.now(timezone.utc)
+    weekday = now.weekday()  # 0=Monday, 6=Sunday
+    hour = now.hour
+    minute = now.minute
+    
+    # Weekend check - all markets closed
+    if weekday >= 5:  # Saturday or Sunday
+        return False, "WEEKEND"
+    
+    # Market hours (UTC)
+    market_hours = {
+        "US30": {
+            # NYSE: 14:30-21:00 UTC (9:30 AM - 4:00 PM ET)
+            "open_hour": 14, "open_minute": 30,
+            "close_hour": 21, "close_minute": 0,
+            "name": "NYSE"
+        },
+        "US100": {
+            # NASDAQ: 14:30-21:00 UTC
+            "open_hour": 14, "open_minute": 30,
+            "close_hour": 21, "close_minute": 0,
+            "name": "NASDAQ"
+        },
+        "GER30": {
+            # XETRA: 08:00-16:30 UTC (9:00 AM - 5:30 PM CET)
+            "open_hour": 8, "open_minute": 0,
+            "close_hour": 16, "close_minute": 30,
+            "name": "XETRA"
+        }
+    }
+    
+    hours = market_hours.get(symbol, market_hours["US30"])
+    current_minutes = hour * 60 + minute
+    open_minutes = hours["open_hour"] * 60 + hours["open_minute"]
+    close_minutes = hours["close_hour"] * 60 + hours["close_minute"]
+    
+    if current_minutes < open_minutes:
+        return False, "PRE_MARKET"
+    elif current_minutes >= close_minutes:
+        return False, "AFTER_HOURS"
+    else:
+        return True, "OPEN"
 
 # ===================== MARKET DATA PROVIDERS =====================
 
