@@ -132,7 +132,7 @@ const Dashboard = () => {
             <span className="text-sm text-[#A3A3A3] hidden md:inline">
               Welcome, <span className="text-white">{user?.name}</span>
             </span>
-            {user?.role === 'owner' && (
+            {user && user.role === 'owner' ? (
               <Button
                 data-testid="owner-panel-btn"
                 onClick={() => navigate('/owner')}
@@ -143,7 +143,7 @@ const Dashboard = () => {
                 <Settings className="w-4 h-4 mr-2" />
                 Owner
               </Button>
-            )}
+            ) : null}
             <Button
               data-testid="logout-btn"
               onClick={handleLogout}

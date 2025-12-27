@@ -95,9 +95,28 @@ const OwnerPanel = () => {
     }
   };
 
-  const copyCode = (code) => {
-    navigator.clipboard.writeText(code);
-    toast.success('Code copied to clipboard');
+  const copyCode = async (code) => {
+    try {
+      // Try modern clipboard API first
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(code);
+      } else {
+        // Fallback for non-HTTPS
+        const textArea = document.createElement('textarea');
+        textArea.value = code;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        textArea.remove();
+      }
+      toast.success('Code copied to clipboard');
+    } catch (error) {
+      toast.error('Failed to copy code');
+    }
   };
 
   const resetDirection = async () => {
