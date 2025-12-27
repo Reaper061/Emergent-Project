@@ -163,9 +163,9 @@ class MarketDataService:
         
         # Symbol mappings for different providers
         self.symbol_map = {
-            "US30": {"av": "DJI", "td": "DJI", "yf": "^DJI", "fn": "^DJI"},
-            "US100": {"av": "NDX", "td": "NDX", "yf": "^NDX", "fn": "^NDX"},
-            "GER30": {"av": "DAX", "td": "GDAXI", "yf": "^GDAXI", "fn": "^GDAXI"},
+            "US30": {"av": "DJI", "td": "DJI", "yf": "^DJI", "fn": "OANDA:US30_USD"},
+            "US100": {"av": "NDX", "td": "NDX", "yf": "^NDX", "fn": "OANDA:NAS100_USD"},
+            "GER30": {"av": "DAX", "td": "DAX", "yf": "^GDAXI", "fn": "OANDA:DE30_EUR"},
         }
     
     async def get_market_data(self, symbol: str) -> MarketData:
