@@ -361,10 +361,11 @@ class MarketDataService:
         return None
     
     async def _fetch_simulated(self, symbol: str) -> MarketData:
-        """Simulated data as ultimate fallback"""
-        base_prices = {"US30": 42500, "US100": 21000, "GER30": 19500}
+        """Simulated data as ultimate fallback - uses realistic current prices"""
+        # Current approximate prices as of late 2024
+        base_prices = {"US30": 48700, "US100": 25600, "GER30": 24300}
         base = base_prices.get(symbol, 40000)
-        variation = random.uniform(-0.005, 0.005)
+        variation = random.uniform(-0.002, 0.002)
         price = base * (1 + variation)
         
         return MarketData(
