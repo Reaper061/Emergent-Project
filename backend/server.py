@@ -310,6 +310,38 @@ class MarketDataService:
             pass
         return None
     
+    async def _fetch_fmp(self, symbol: str) -> Optional[MarketData]:
+        """Financial Modeling Prep API - reliable for indices"""
+        api_key = os.environ.get('FMP_KEY')
+        if not api_key:
+            return None
+        
+        mapped = self.symbol_map.get(symbol, {}).get("fmp", symbol)
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(
+                    f"https://financialmodelingprep.com/api/v3/quote/{mapped}",
+                    params={"apikey": api_key},
+                    timeout=10
+                )
+                data = resp.json()
+                if data and len(data) > 0:
+                    quote = data[0]
+                    return MarketData(
+                        symbol=symbol,
+                        price=float(quote.get("price", 0)),
+                        change=float(quote.get("change", 0)),
+                        change_percent=float(quote.get("changesPercentage", 0)),
+                        high=float(quote.get("dayHigh", 0)),
+                        low=float(quote.get("dayLow", 0)),
+                        open=float(quote.get("open", 0)),
+                        volume=int(quote.get("volume", 0)),
+                        timestamp=datetime.now(timezone.utc)
+                    )
+        except Exception as e:
+            logger.warning(f"FMP fetch failed: {e}")
+        return None
+    
     async def _fetch_polygon(self, symbol: str) -> Optional[MarketData]:
         api_key = os.environ.get('POLYGON_KEY')
         if not api_key:
