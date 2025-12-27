@@ -183,6 +183,8 @@ class MarketDataService:
             try:
                 data = await provider(symbol)
                 if data:
+                    data.is_market_open = market_open
+                    data.market_status = market_status
                     self.cache[cache_key] = data
                     return data
             except Exception as e:
@@ -190,7 +192,10 @@ class MarketDataService:
                 continue
         
         # Ultimate fallback
-        return await self._fetch_simulated(symbol)
+        fallback = await self._fetch_simulated(symbol)
+        fallback.is_market_open = market_open
+        fallback.market_status = market_status
+        return fallback
     
     async def _fetch_alpha_vantage(self, symbol: str) -> Optional[MarketData]:
         api_key = os.environ.get('ALPHA_VANTAGE_KEY')
