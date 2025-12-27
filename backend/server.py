@@ -629,7 +629,9 @@ async def get_market_data(symbol: str, _: dict = Depends(verify_token)):
         "low": data.low,
         "open": data.open,
         "volume": data.volume,
-        "timestamp": data.timestamp.isoformat()
+        "timestamp": data.timestamp.isoformat(),
+        "is_market_open": data.is_market_open,
+        "market_status": data.market_status
     }
 
 @api_router.get("/market")
@@ -643,7 +645,9 @@ async def get_all_market_data(_: dict = Depends(verify_token)):
             "change_percent": data.change_percent,
             "high": data.high,
             "low": data.low,
-            "timestamp": data.timestamp.isoformat()
+            "timestamp": data.timestamp.isoformat(),
+            "is_market_open": data.is_market_open,
+            "market_status": data.market_status
         }
     return results
 
