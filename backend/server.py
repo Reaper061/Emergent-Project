@@ -169,9 +169,15 @@ class MarketDataService:
         }
     
     async def get_market_data(self, symbol: str) -> MarketData:
+        # Check market hours first
+        market_open, market_status = is_market_open(symbol)
+        
         cache_key = f"{symbol}_{int(datetime.now(timezone.utc).timestamp() / self.cache_ttl)}"
         if cache_key in self.cache:
-            return self.cache[cache_key]
+            cached = self.cache[cache_key]
+            cached.is_market_open = market_open
+            cached.market_status = market_status
+            return cached
         
         for provider in self.providers:
             try:
