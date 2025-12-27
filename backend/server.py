@@ -151,6 +151,7 @@ class MarketDataService:
         self.providers = [
             self._fetch_yahoo_finance,  # Most reliable for indices
             self._fetch_twelve_data,
+            self._fetch_fmp,  # Financial Modeling Prep
             self._fetch_finnhub,
             self._fetch_alpha_vantage,
             self._fetch_polygon,
@@ -163,9 +164,9 @@ class MarketDataService:
         
         # Symbol mappings for different providers
         self.symbol_map = {
-            "US30": {"av": "DJI", "td": "DJI", "yf": "^DJI", "fn": "OANDA:US30_USD"},
-            "US100": {"av": "NDX", "td": "NDX", "yf": "^NDX", "fn": "OANDA:NAS100_USD"},
-            "GER30": {"av": "DAX", "td": "DAX", "yf": "^GDAXI", "fn": "OANDA:DE30_EUR"},
+            "US30": {"av": "DJI", "td": "DJI", "yf": "^DJI", "fn": "OANDA:US30_USD", "fmp": "^DJI"},
+            "US100": {"av": "NDX", "td": "NDX", "yf": "^NDX", "fn": "OANDA:NAS100_USD", "fmp": "^NDX"},
+            "GER30": {"av": "DAX", "td": "DAX", "yf": "^GDAXI", "fn": "OANDA:DE30_EUR", "fmp": "^GDAXI"},
         }
     
     async def get_market_data(self, symbol: str) -> MarketData:
