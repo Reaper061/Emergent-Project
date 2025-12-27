@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { 
   TrendingUp, TrendingDown, Clock, Lock, Unlock,
   Activity, Target, Shield, Zap, LogOut, Settings,
-  ChevronUp, ChevronDown, AlertCircle, CheckCircle2
+  ChevronUp, ChevronDown, AlertCircle, CheckCircle2, Moon
 } from 'lucide-react';
 import PriceChart from '@/components/PriceChart';
 import SignalCard from '@/components/SignalCard';
@@ -28,6 +28,25 @@ const Dashboard = () => {
   const [sessions, setSessions] = useState({});
   const [selectedSymbol, setSelectedSymbol] = useState('US30');
   const [isLoading, setIsLoading] = useState(true);
+
+  // Check if all markets are closed
+  const allMarketsClosed = useMemo(() => {
+    const symbols = Object.keys(marketData);
+    if (symbols.length === 0) return false;
+    return symbols.every(symbol => marketData[symbol]?.is_market_open === false);
+  }, [marketData]);
+
+  // Get market status message
+  const getMarketStatusMessage = useMemo(() => {
+    const firstMarket = Object.values(marketData)[0];
+    if (!firstMarket) return '';
+    switch (firstMarket.market_status) {
+      case 'WEEKEND': return 'Markets are closed for the weekend';
+      case 'PRE_MARKET': return 'Markets open soon - Pre-market hours';
+      case 'AFTER_HOURS': return 'Markets closed - After hours';
+      default: return 'Markets are currently closed';
+    }
+  }, [marketData]);
 
   const fetchData = useCallback(async () => {
     try {
