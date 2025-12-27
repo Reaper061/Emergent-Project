@@ -436,6 +436,10 @@ class SignalEngine:
     
     def generate_signal(self, symbol: str, market_data: MarketData, force_direction: str = None) -> Optional[Signal]:
         """Generate trading signal based on engine rules"""
+        # Check if market is open first
+        if not market_data.is_market_open:
+            return None
+        
         sessions = self.get_session_status()
         session_info = sessions.get(symbol, {})
         
