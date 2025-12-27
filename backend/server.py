@@ -149,10 +149,10 @@ def is_market_open(symbol: str) -> tuple[bool, str]:
 class MarketDataService:
     def __init__(self):
         self.providers = [
-            self._fetch_alpha_vantage,
+            self._fetch_yahoo_finance,  # Most reliable for indices
             self._fetch_twelve_data,
             self._fetch_finnhub,
-            self._fetch_yahoo_finance,
+            self._fetch_alpha_vantage,
             self._fetch_polygon,
             self._fetch_marketstack,
             self._fetch_fcsapi,
