@@ -779,6 +779,11 @@ async def get_all_market_data(_: dict = Depends(verify_token)):
         }
     return results
 
+@api_router.get("/providers/health")
+async def get_providers_health(_: dict = Depends(verify_owner)):
+    """Get health status of all data providers (owner only)"""
+    return market_service.get_provider_health()
+
 # Signals
 @api_router.get("/signals")
 async def get_signals(_: dict = Depends(verify_token)):
