@@ -1,0 +1,169 @@
+{
+  "identity": {
+    "name": "Richgang FX Indice Killer",
+    "persona": "The Terminal",
+    "archetype": "Electric & Neon (Archetype 2)",
+    "vibe": "Precision, Aggression, Wealth, Speed",
+    "emotional_goal": "Make the user feel like a predator in the market. Confidence, Focus, Control."
+  },
+  "typography": {
+    "fonts": {
+      "heading": {
+        "family": "Unbounded",
+        "url": "https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;800&display=swap",
+        "weights": ["300", "400", "600", "800"],
+        "usage": "Headings, Big Stats, Hero Text. Use 'tracking-tighter' for large sizes."
+      },
+      "body": {
+        "family": "Manrope",
+        "url": "https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&display=swap",
+        "weights": ["300", "400", "500", "700"],
+        "usage": "UI Text, Labels, Descriptions. Clean and legible."
+      },
+      "mono": {
+        "family": "JetBrains Mono",
+        "url": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap",
+        "weights": ["400", "700"],
+        "usage": "Prices, Tickers, Confidence Scores, Time. The 'Data' font."
+      }
+    },
+    "rules": [
+      "NEVER use Inter.",
+      "Headings > 32px must use 'tracking-tighter'.",
+      "Labels must be Uppercase + 'tracking-widest' + 'text-xs'.",
+      "Use 'JetBrains Mono' for ALL numerical data to ensure tabular alignment."
+    ]
+  },
+  "colors": {
+    "palette": {
+      "background": {
+        "default": "#050505",
+        "card": "#0A0A0A",
+        "overlay": "rgba(5, 5, 5, 0.8)"
+      },
+      "primary": {
+        "main": "#00FF94",
+        "hover": "#00CC76",
+        "dim": "rgba(0, 255, 148, 0.1)",
+        "text": "#000000"
+      },
+      "secondary": {
+        "main": "#FF0055",
+        "hover": "#CC0044",
+        "dim": "rgba(255, 0, 85, 0.1)"
+      },
+      "accent": {
+        "main": "#00F0FF",
+        "hover": "#00C0CC",
+        "dim": "rgba(0, 240, 255, 0.1)"
+      },
+      "neutral": {
+        "50": "#FAFAFA",
+        "100": "#F5F5F5",
+        "200": "#E5E5E5",
+        "300": "#D4D4D4",
+        "400": "#A3A3A3",
+        "500": "#737373",
+        "600": "#525252",
+        "700": "#404040",
+        "800": "#262626",
+        "900": "#171717",
+        "950": "#0A0A0A"
+      }
+    },
+    "semantic": {
+      "buy": "#00FF94",
+      "sell": "#FF0055",
+      "pending": "#00F0FF",
+      "text_primary": "#FFFFFF",
+      "text_secondary": "#A3A3A3",
+      "border": "#262626",
+      "border_active": "#404040"
+    },
+    "gradients": {
+      "glow_green": "radial-gradient(circle at center, rgba(0, 255, 148, 0.15) 0%, transparent 70%)",
+      "glow_red": "radial-gradient(circle at center, rgba(255, 0, 85, 0.15) 0%, transparent 70%)",
+      "beam": "linear-gradient(90deg, transparent, #00FF94, transparent)"
+    }
+  },
+  "layout": {
+    "grid_system": "The Control Room (Mode B)",
+    "spacing": {
+      "container_padding": "p-4 md:p-6 lg:p-8",
+      "gap": "gap-4 md:gap-6",
+      "section_spacing": "py-12 md:py-24"
+    },
+    "containers": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 h-[calc(100vh-4rem)]",
+      "card": "relative overflow-hidden rounded-none border border-neutral-800 bg-neutral-950/50 backdrop-blur-md"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#00FF94] text-black font-bold uppercase tracking-wide hover:bg-[#00CC76] rounded-sm px-6 py-3 transition-all shadow-[0_0_15px_rgba(0,255,148,0.3)] hover:shadow-[0_0_25px_rgba(0,255,148,0.5)]",
+      "secondary": "bg-transparent border border-neutral-700 text-white hover:border-white hover:bg-white/5 rounded-sm px-6 py-3 uppercase tracking-wide transition-all",
+      "destructive": "bg-[#FF0055] text-white font-bold uppercase tracking-wide hover:bg-[#CC0044] rounded-sm px-6 py-3 shadow-[0_0_15px_rgba(255,0,85,0.3)]"
+    },
+    "cards": {
+      "signal_card": "group relative border border-neutral-800 bg-neutral-900/40 p-6 hover:border-neutral-700 transition-colors",
+      "stat_card": "border-l-2 border-neutral-800 bg-neutral-900/20 p-4 hover:bg-neutral-900/40 transition-colors"
+    },
+    "inputs": {
+      "default": "bg-neutral-950 border-neutral-800 focus:border-[#00FF94] focus:ring-1 focus:ring-[#00FF94] rounded-sm h-12 text-white placeholder:text-neutral-600 font-mono"
+    }
+  },
+  "visual_enhancers": {
+    "textures": {
+      "noise": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
+      "grid": "linear-gradient(to right, #262626 1px, transparent 1px), linear-gradient(to bottom, #262626 1px, transparent 1px)"
+    },
+    "effects": {
+      "glass": "backdrop-blur-xl bg-black/60 border border-white/10",
+      "neon_glow": "box-shadow: 0 0 10px var(--color-primary), 0 0 20px var(--color-primary-dim)"
+    }
+  },
+  "motion": {
+    "transitions": "transition-all duration-300 ease-out",
+    "animations": {
+      "pulse_slow": "animate-pulse duration-[3000ms]",
+      "slide_up": "animate-in slide-in-from-bottom-4 fade-in duration-500"
+    }
+  },
+  "assets": {
+    "images": {
+      "background_texture": {
+        "url": "https://images.unsplash.com/photo-1766339796363-bf0373461816?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMG5lb24lMjBmaW5hbmNpYWwlMjBkYXRhJTIwdmlzdWFsaXphdGlvbiUyMGRhcmslMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc2Njg0NTA2Nnww&ixlib=rb-4.1.0&q=85",
+        "alt": "Abstract Digital Waves",
+        "usage": "Global Background Overlay (Low Opacity)"
+      },
+      "hero_visual": {
+        "url": "https://images.unsplash.com/photo-1538170819641-15b741105cb3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMG5lb24lMjBmaW5hbmNpYWwlMjBkYXRhJTIwdmlzdWFsaXphdGlvbiUyMGRhcmslMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc2Njg0NTA2Nnww&ixlib=rb-4.1.0&q=85",
+        "alt": "Hologram Interaction",
+        "usage": "Login Page / Landing Hero"
+      },
+      "trader_context": {
+        "url": "https://images.unsplash.com/photo-1639091824355-48221063de7f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwzfHxwcm9mZXNzaW9uYWwlMjB0cmFkZXIlMjBkZXNrJTIwc2V0dXAlMjBkYXJrJTIwbW9kZSUyMG11bHRpcGxlJTIwc2NyZWVuc3xlbnwwfHx8fDE3NjY4NDUwNjh8MA&ixlib=rb-4.1.0&q=85",
+        "alt": "Professional Trader Desk",
+        "usage": "About / Features Section"
+      }
+    },
+    "icons": "Lucide React (Default). Use 'stroke-1' for a thin, technical look."
+  },
+  "instructions_to_main_agent": [
+    "1. SETUP: Install fonts 'Unbounded', 'Manrope', 'JetBrains Mono' immediately.",
+    "2. THEME: Force DARK MODE. There is no light mode for this app. It is a terminal.",
+    "3. LAYOUT: Use the 'Control Room' grid. No wasted space. Dense data.",
+    "4. COMPONENTS: Customize Shadcn components to remove rounded corners (use rounded-sm or rounded-none).",
+    "5. CHARTS: Use Recharts. Style them with gradients (Green for up, Red for down). Hide grid lines or make them very subtle.",
+    "6. SIGNAL CARDS: These are the core. Make them pop. Use the 'Neon Glow' effect on the active signal card.",
+    "7. BACKGROUND: Use the 'background_texture' image as a fixed background with 10% opacity over the black base.",
+    "8. DATA-TESTID: Add 'data-testid' to every interactive element (buttons, inputs, cards)."
+  ],
+  "universal_guidelines": [
+    "Avoid 'AI Slop' - no generic centered layouts.",
+    "Use 2-3x more spacing than feels comfortable inside containers, but keep the grid dense.",
+    "Micro-animations on everything (hover, focus, active).",
+    "Never use pure black (#000000) for backgrounds, use #050505.",
+    "Use 'sonner' for toasts."
+  ]
+}
