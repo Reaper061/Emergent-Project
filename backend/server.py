@@ -658,6 +658,18 @@ async def get_all_market_data(_: dict = Depends(verify_token)):
 # Signals
 @api_router.get("/signals")
 async def get_signals(_: dict = Depends(verify_token)):
+    # Check if any market is open
+    all_closed = True
+    for symbol in ["US30", "US100", "GER30"]:
+        market_open, _ = is_market_open(symbol)
+        if market_open:
+            all_closed = False
+            break
+    
+    # Return empty if all markets closed
+    if all_closed:
+        return []
+    
     signals = await db.signals.find(
         {"status": {"$in": ["ACTIVE", "TP1_HIT", "TP2_HIT"]}},
         {"_id": 0}
@@ -671,6 +683,18 @@ async def get_signals(_: dict = Depends(verify_token)):
 
 @api_router.get("/signals/pending")
 async def get_pending_signals(_: dict = Depends(verify_token)):
+    # Check if any market is open
+    all_closed = True
+    for symbol in ["US30", "US100", "GER30"]:
+        market_open, _ = is_market_open(symbol)
+        if market_open:
+            all_closed = False
+            break
+    
+    # Return empty if all markets closed
+    if all_closed:
+        return []
+    
     signals = await db.signals.find(
         {"is_pending": True, "status": "PENDING"},
         {"_id": 0}
