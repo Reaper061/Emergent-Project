@@ -178,6 +178,20 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="p-4 md:p-6">
+        {/* Market Closed Banner */}
+        {allMarketsClosed && (
+          <div className="mb-6 p-4 border border-[#FF0055]/30 bg-[#FF0055]/5 flex items-center gap-4">
+            <div className="w-12 h-12 flex items-center justify-center border border-[#FF0055]/50 bg-[#FF0055]/10">
+              <Moon className="w-6 h-6 text-[#FF0055]" />
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-[#FF0055]">MARKETS CLOSED</h3>
+              <p className="text-sm text-[#A3A3A3]">{getMarketStatusMessage}</p>
+              <p className="text-xs text-[#525252] mt-1">Signals will resume when markets reopen</p>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
           
           {/* Left Column - Market Cards */}
